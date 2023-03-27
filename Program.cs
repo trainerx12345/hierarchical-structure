@@ -4,62 +4,108 @@
     {
         static void Main(string[] args)
         {
-            Branch rootBranch = new Branch(1);
+            Node node1 = new Node("Node 1");
+            Node node2 = new Node("Node 2");
+            Node node3 = new Node("Node 3");
+            Node node4 = new Node("Node 4");
 
-            Branch leftBranch = new Branch(2);
-            rootBranch.AddChild(leftBranch);
+            node1.AddChild(node2);
+            node2.AddChild(node3);
+            node3.AddChild(node4);
 
-            Branch rightBranch = new Branch(3);
-            rootBranch.AddChild(rightBranch);
+            Console.WriteLine("Initial tree:");
+            node1.Print();
 
-            Branch thirdDepth1 = new Branch(4);
-            leftBranch.AddChild(thirdDepth1);
+            Console.WriteLine("\nAdding a child node to Node 2:");
+            Node newNode = new Node("New Node");
+            node2.AddChild(newNode);
+            node2.AddChild(new Node("New Node2"));
+            node2.AddChild(new Node("New Node3"));
+            node2.AddChild(new Node("New Node4"));
+            node3.AddChild(new Node("New Node5"));
+            node3.AddChild(new Node("New Node6"));
+            node3.AddChild(new Node("New Node7"));
+            node1.Print();
 
-            Branch thirdDepth2 = new Branch(5);
-            rightBranch.AddChild(thirdDepth2);
 
-            Branch thirdDepth3 = new Branch(6);
-            rightBranch.AddChild(thirdDepth3);
+            Console.WriteLine("\nUpdating Node 3:");
+            node3.Update("Updated Node 3");
+            node1.Print();
 
-            Branch thirdDepth4 = new Branch(7);
-            rightBranch.AddChild(thirdDepth4);
+            Console.WriteLine("\nDeleting Node 4:");
+            node4.Delete();
+            node1.Print();
 
-            Branch fourthDepth1 = new Branch(8);
-            thirdDepth2.AddChild(fourthDepth1);
+            Console.WriteLine("\nDeleting Node 3:");
+            node3.Delete();
+            node1.Print();
 
-            Branch fourthDepth2 = new Branch(9);
-            thirdDepth3.AddChild(fourthDepth2);
-
-            Branch fourthDepth3 = new Branch(10);
-            thirdDepth3.AddChild(fourthDepth3);
-
-            Branch fithDepth1 = new Branch(11);
-            fourthDepth1.AddChild(fithDepth1);
-
-            rootBranch.PrintBranch();
             Console.ReadLine();
+
         }
-
-        public class Branch
+        public class Node
         {
-            public List<Branch> branches { get; set; }
-            public int Value { get; set; }
+            public string Name { get; set; }
+            public List<Node> Children { get; set; }
 
-            public Branch(int value)
+            public Node? Parent { get; set; }
+
+            public Node(string name)
             {
-                Value = value;
-                branches = new List<Branch>();
+                Name = name;
+                Children = new List<Node>();
             }
 
-            public void AddChild(Branch child)
+
+            public void Print(string prefix = "", bool isLast = true)
             {
-                branches.Add(child);
-            }
-            public void PrintBranch() { 
-               foreach (Branch child in branches)
+                Console.Write(prefix);
+
+                if (isLast)
                 {
-                    Console.WriteLine($"{child.Value}");  
-       
+                    Console.Write("└─");
+                    prefix += "  ";
+                }
+                else
+                {
+                    Console.Write("├─");
+                    prefix += "│ ";
+                }
+
+                Console.WriteLine(Name);
+
+                for (int i = 0; i < Children.Count; i++)
+                {
+                    Children[i].Print(prefix, i == Children.Count - 1);
+                }
+            }
+
+
+
+            public void AddChild(Node child)
+            {
+                Children.Add(child);
+                child.Parent = this;
+            }
+
+            public void Update(string newName)
+            {
+                Name = newName;
+            }
+
+            public void Delete()
+            {
+                if (Children.Count > 0)
+                {
+                    Console.WriteLine("Node has children, cannot delete.");
+                }
+                else
+                {
+                    // Remove the node from its parent's children list
+                    if (Parent != null)
+                    {
+                        Parent.Children.Remove(this);
+                    }
                 }
             }
         }
